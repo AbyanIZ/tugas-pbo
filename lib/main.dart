@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),
-              itemCount: 5,
+              itemCount: 4,
               itemBuilder: (context, index) {
                 return FoodCard();
               },
@@ -177,6 +177,7 @@ class FoodCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Aligns content to the left
         children: [
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
@@ -184,7 +185,7 @@ class FoodCard extends StatelessWidget {
               'images/burger.jpg',
               fit: BoxFit.cover,
               width: double.infinity,
-              height: 120,
+              height: 180,
             ),
           ),
           Padding(
@@ -194,7 +195,7 @@ class FoodCard extends StatelessWidget {
               children: [
                 Text(
                   'Burger King Medium',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal), // Adjusted font weight
                   textAlign: TextAlign.left,
                 ),
                 Text(
