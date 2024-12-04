@@ -1,0 +1,6 @@
+flutter_native_splash:
+ android: true
+ web: true
+
+ color: "#0088ff"
+ image: "images/burgerlogo.png"
