@@ -3,4 +3,4 @@ flutter_native_splash:
  web: true
 
  color: "#0088ff"
- image: "images/burgerlogo.png"
+ image: "images/logo.png"

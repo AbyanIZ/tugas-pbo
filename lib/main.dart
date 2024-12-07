@@ -36,7 +36,7 @@ class _HomepageState extends State<Homepage> {
   final List<Widget> _pages = [
     HomeScreen(),
     CartPage(),
-    OrderPage(),
+    PesanPage(),
   ];
 
   @override
@@ -45,10 +45,10 @@ class _HomepageState extends State<Homepage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: const Color.fromARGB(255, 255, 255, 255)),
-          onPressed: () {},
-        ),
+       leading: IconButton(
+  icon: Icon(Icons.menu, color: Colors.black),  // Ubah menjadi warna hitam atau warna lain yang terlihat
+  onPressed: () {},
+),
         actions: [
           IconButton(
             icon: Icon(Icons.person, color: Colors.black),
@@ -218,6 +218,41 @@ class FoodCard extends StatelessWidget {
   }
 }
 
+class SummaryRow extends StatelessWidget {
+  final String label;
+  final int value;
+  final bool isBold;
+
+  SummaryRow({required this.label, required this.value, this.isBold = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            'Rp. ${value.toString()}.000,00',
+            style: TextStyle(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// For example, the CartPage class:
 class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -247,7 +282,7 @@ class CartPage extends StatelessWidget {
                   CartItem(
                     imagePath: 'images/teh.jpg',
                     name: 'Teh Botol',
-                    price: 40,
+                    price: 5,
                     quantity: 2,
                   ),
                   CartItem(
@@ -265,11 +300,11 @@ class CartPage extends StatelessWidget {
               child: Column(
                 children: [
                   SummaryRow(label: 'PPN 11%', value: 10),
-                  SummaryRow(label: 'Total Belanja', value: 94),
+                  SummaryRow(label: 'Total Belanja', value: 90),
                   Divider(),
                   SummaryRow(
                     label: 'Total Pembayaran',
-                    value: 104,
+                    value: 100,
                     isBold: true,
                   ),
                 ],
@@ -350,13 +385,23 @@ class CartItem extends StatelessWidget {
           Row(
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Kurangi kuantitas
+                },
                 icon: Icon(Icons.remove_circle_outline, color: Colors.grey),
               ),
               Text('$quantity'),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Tambah kuantitas
+                },
                 icon: Icon(Icons.add_circle_outline, color: Colors.grey),
+              ),
+              IconButton(
+                onPressed: () {
+                  // Logika untuk menghapus item
+                },
+                icon: Icon(Icons.delete, color: Colors.red), // Tambahkan ikon trash
               ),
             ],
           ),
@@ -366,39 +411,54 @@ class CartItem extends StatelessWidget {
   }
 }
 
-class SummaryRow extends StatelessWidget {
-  final String label;
-  final int value;
-  final bool isBold;
 
-  SummaryRow({
-    required this.label,
-    required this.value,
-    this.isBold = false,
+class PesanItem extends StatelessWidget {
+  final String imagePath;
+  final String name;
+  final int price;
+  final VoidCallback? onDelete; // Tambahkan callback untuk hapus item
+
+  PesanItem({
+    required this.imagePath,
+    required this.name,
+    required this.price,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 16, fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-          ),
-          Text(
-            'Rp. $value.000,00',
-            style: TextStyle(fontSize: 16, fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
-          ),
-        ],
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: ListTile(
+        leading: Image.asset(imagePath, width: 70, height: 70, fit: BoxFit.cover),
+        title: Text(name),
+        subtitle: Text('\Rp${price.toString()}.000,00'),
+        trailing: IconButton(
+          icon: Icon(Icons.delete, color: Colors.red),
+          onPressed: onDelete, // Fungsi untuk hapus item
+        ),
       ),
     );
   }
 }
 
-class OrderPage extends StatelessWidget {
+
+
+// Halaman OrderPage
+class PesanPage extends StatefulWidget {
+  @override
+  _PesanPageState createState() => _PesanPageState();
+}
+
+class _PesanPageState extends State<PesanPage> {
+  // Daftar item dinamis
+  List<Map<String, dynamic>> _items = [
+    {'imagePath': 'images/burger.jpg', 'name': 'Burger King Medium', 'price': 50},
+    {'imagePath': 'images/teh.jpg', 'name': 'Teh Botol', 'price': 4},
+    {'imagePath': 'images/burger.jpg', 'name': 'Burger King Small', 'price': 35},
+    {'imagePath': 'images/cemilan.jpg', 'name': 'Cemilan', 'price': 2},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -416,7 +476,12 @@ class OrderPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddDataPage()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
@@ -428,37 +493,22 @@ class OrderPage extends StatelessWidget {
               label: Text("Add Data"),
             ),
             SizedBox(height: 20),
-            Container(
-              color: Colors.grey[200],
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: Text("Foto", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 4, child: Text("Nama Produk", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 3, child: Text("Harga", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 1, child: Text("Aksi", style: TextStyle(fontWeight: FontWeight.bold))),
-                ],
-              ),
-            ),
             Expanded(
-              child: ListView(
-                children: [
-                  OrderItem(
-                    imagePath: 'images/burger.jpg',
-                    name: 'Burger King Medium',
-                    price: 50,
-                  ),
-                  OrderItem(
-                    imagePath: 'images/teh.jpg',
-                    name: 'Teh Botol',
-                    price: 4,
-                  ),
-                  OrderItem(
-                    imagePath: 'images/burger.jpg',
-                    name: 'Burger King Small',
-                    price: 35,
-                  ),
-                ],
+              child: ListView.builder(
+                itemCount: _items.length,
+                itemBuilder: (context, index) {
+                  final item = _items[index];
+                  return PesanItem(
+                    imagePath: item['imagePath'],
+                    name: item['name'],
+                    price: item['price'],
+                    onDelete: () {
+                      setState(() {
+                        _items.removeAt(index); // Hapus item dari daftar
+                      });
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -468,154 +518,138 @@ class OrderPage extends StatelessWidget {
   }
 }
 
-// PesanPage
 
-class PesanPage extends StatelessWidget {
+// Komponen OrderItem
+class AddDataPage extends StatefulWidget {
+  @override
+  _AddDataPageState createState() => _AddDataPageState();
+}
+
+class _AddDataPageState extends State<AddDataPage> {
+  String? _selectedCategory = 'Makanan'; // Nilai default
+  final List<String> _categories = ['Makanan', 'Minuman', 'Lainnya'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
-          "Orders",
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
+        title: Text(
+          "Add Data",
+          style: TextStyle(color: Colors.black),
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.person, color: Colors.black),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Nama Produk
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "Nama Produk",
+                  labelStyle: TextStyle(fontSize: 14),
+                  hintText: "Masukan nama produk",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
               ),
-              icon: Icon(Icons.add),
-              label: Text("Add Data"),
-            ),
-            SizedBox(height: 20),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Expanded(flex: 2, child: Text("Foto", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 4, child: Text("Nama Produk", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 3, child: Text("Harga", style: TextStyle(fontWeight: FontWeight.bold))),
-                  Expanded(flex: 1, child: Text("Aksi", style: TextStyle(fontWeight: FontWeight.bold))),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: ListView(
-                children: [
-                  OrderItem(
-                    imagePath: 'images/burger.jpg',
-                    name: 'Burger King Medium',
-                    price: 50,
+              SizedBox(height: 16),
+
+              // Harga Produk
+              TextField(
+                decoration: InputDecoration(
+                  labelText: "Harga",
+                  labelStyle: TextStyle(fontSize: 14),
+                  hintText: "Masukan Harga",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  OrderItem(
-                    imagePath: 'images/teh.jpg',
-                    name: 'Teh Botol',
-                    price: 4,
-                  ),
-                  OrderItem(
-                    imagePath: 'images/burger.jpg',
-                    name: 'Burger King Small',
-                    price: 35,
-                  ),
-                ],
+                ),
+                keyboardType: TextInputType.number,
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+
+              // Kategori Produk
+              DropdownButtonFormField<String>(
+                value: _selectedCategory,
+                items: _categories.map((category) {
+                  return DropdownMenuItem(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategory = value!;
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: "Kategori produk",
+                  labelStyle: TextStyle(fontSize: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+
+              // Pilih Gambar
+              TextField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: "Image",
+                  labelStyle: TextStyle(fontSize: 14),
+                  hintText: "Choose file",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  suffixIcon: Icon(Icons.upload_file),
+                ),
+                onTap: () {
+                  // Logika untuk memilih file (opsional)
+                },
+              ),
+              SizedBox(height: 32),
+
+              // Tombol Submit
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Tambahkan logika untuk menyimpan data di sini
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    "Submit",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
-  }
-}
-
-class OrderItem extends StatelessWidget {
-  final String imagePath;
-  final String name;
-  final int price;
-
-  OrderItem({
-    required this.imagePath,
-    required this.name,
-    required this.price,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imagePath,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 4,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Text(
-                name,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text(
-              'Rp. ${price.toString()}.000,00',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ),
-
-          Expanded(
-            flex: 1,
-            child: IconButton(
-              onPressed: () {
-              },
-              icon: Icon(Icons.delete, color: Colors.red),
-              iconSize: 24,
-            ),
-          ),
-        ],
       ),
     );
   }
